@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>QuantusPunks</title>
+<meta name="description" content="10,000 pixel punks minted with QTC on Quantus, the post-quantum proof-of-work chain.">
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Tektur:wght@500;700;900&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/site.css">
+</head>
+<body>
+<canvas id="lattice" aria-hidden="true"></canvas>
+
+<header class="bar">
+  <a href="#top" class="brand"><canvas id="brandMark" width="24" height="24" aria-hidden="true"></canvas><span>QuantusPunks</span></a>
+  <nav class="nav" id="nav">
+    <a href="#mint">Mint</a>
+    <a href="#collection">Collection</a>
+    <a href="#mine">My Punks</a>
+    <a href="#how">How it works</a>
+  </nav>
+  <div class="live" id="liveChip"><span class="pulse"></span><span id="liveText">Connecting…</span></div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="hero-copy">
+      <p class="kicker">Collection · Quantus L1 · ML-DSA signed</p>
+      <h1>Ten thousand punks,<br><em>quantum-proof</em> from block one.</h1>
+      <p class="lede">The first punk collection on Quantus. Every mint is a plain QTC transfer signed with a post-quantum key, so your punk never depends on elliptic curves.</p>
+      <div class="cta">
+        <a href="#mint" class="btn btn-gold">Mint for 0.01 QTC</a>
+        <a href="#collection" class="btn btn-ghost">Browse all 10,000</a>
+      </div>
+      <dl class="specs">
+        <div><dt>Supply</dt><dd id="specSupply">10,000</dd></div>
+        <div><dt>Price</dt><dd id="specPrice">0.01 QTC</dd></div>
+        <div><dt>Minted</dt><dd id="specMinted">0</dd></div>
+        <div><dt>Royalty</dt><dd id="specRoyalty">10%</dd></div>
+      </dl>
+    </div>
+
+    <figure class="specimen" aria-label="Featured punk">
+      <div class="specimen-frame">
+        <canvas id="heroPunk" width="480" height="480"></canvas>
+        <span class="tick t1"></span><span class="tick t2"></span><span class="tick t3"></span><span class="tick t4"></span>
+      </div>
+      <figcaption class="readout">
+        <div class="readout-head"><span id="heroId">#0001</span><span id="heroType">Human</span></div>
+        <ul id="heroTraits"></ul>
+      </figcaption>
+    </figure>
+  </section>
+
+  <div class="ribbon" aria-hidden="true"><div class="ribbon-track" id="ribbon"></div></div>
+
+  <!-- MINT -->
+  <section class="section" id="mint">
+    <header class="section-head">
+      <p class="kicker">Mint</p>
+      <h2>Send QTC, receive punks.</h2>
+      <p class="muted">Quantus has no smart contracts, so the mint works like a vending machine: you send an exact amount to the treasury and the indexer assigns your punks in the next finalized block.</p>
+    </header>
+
+    <div class="mint-grid">
+      <div class="panel mint-panel">
+        <div class="progress">
+          <div class="progress-top"><span>Minted</span><span class="num" id="mintedLabel">0 / 10,000</span></div>
+          <div class="progress-bar"><div id="progressFill"></div></div>
+        </div>
+
+        <div class="field">
+          <label for="qty">How many punks</label>
+          <div class="stepper">
+            <button type="button" id="qtyDown" aria-label="One fewer">−</button>
+            <input id="qty" type="number" min="1" max="20" value="1" inputmode="numeric">
+            <button type="button" id="qtyUp" aria-label="One more">+</button>
+          </div>
+          <p class="hint">Up to <span id="maxTx">20</span> per transfer. Extra QTC above a whole punk is refunded.</p>
+        </div>
+
+        <div class="amount">
+          <span>Send exactly</span>
+          <div class="amount-row"><strong class="num" id="amountQTC">0.01</strong><span>QTC</span><button type="button" class="chip" id="copyAmount">Copy</button></div>
+        </div>
+
+        <div class="field">
+          <label>To the treasury address</label>
+          <div class="addr-box">
+            <code id="treasuryAddr">qz…</code>
+            <button type="button" class="chip" id="copyTreasury">Copy</button>
+          </div>
+        </div>
+        <div class="qr" id="qr" aria-label="Treasury address QR code"></div>
+      </div>
+
+      <div class="panel steps-panel">
+        <ol class="steps">
+          <li><h3>Open Quantus Wallet</h3><p>The official app for iOS and Android. Fund it with QTC (near.com, SafeTrade or mining).</p></li>
+          <li><h3>Send the exact amount</h3><p>Paste the treasury address, enter the amount shown, and send a normal transfer. Do not use a private wormhole transfer: it hides the sender, so we cannot tell who to give the punks to.</p></li>
+          <li><h3>Track your mint</h3>
+            <p>Paste the address you sent from. We watch the network and show your punks once the block is finalized.</p>
+            <div class="track">
+              <input id="trackAddr" type="text" placeholder="qz… your Quantus address" autocomplete="off" spellcheck="false">
+              <button type="button" class="btn btn-gold btn-sm" id="trackBtn">Track</button>
+            </div>
+            <div class="track-status" id="trackStatus" hidden></div>
+          </li>
+        </ol>
+        <div class="recent">
+          <h3>Latest mints</h3>
+          <ul id="recentList"><li class="muted">No mints yet.</li></ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- COLLECTION -->
+  <section class="section" id="collection">
+    <header class="section-head">
+      <p class="kicker">Collection</p>
+      <h2>Browse the full set.</h2>
+      <p class="muted">All 10,000 punks are fixed before the mint. The order you receive them in is shuffled with a secret seed, committed before launch and revealed at sell-out.</p>
+    </header>
+    <div class="filters">
+      <div class="search"><label for="searchId" class="sr">Punk number</label><input id="searchId" type="number" min="1" max="10000" placeholder="Go to #"></div>
+      <select id="fType" aria-label="Type"></select>
+      <select id="fHead" aria-label="Head"></select>
+      <select id="fEyes" aria-label="Eyes"></select>
+      <select id="fSort" aria-label="Sort">
+        <option value="id">Number</option>
+        <option value="rare">Rarest first</option>
+      </select>
+      <span class="count num" id="resultCount"></span>
+    </div>
+    <div class="gallery" id="gallery"></div>
+    <div class="pager">
+      <button type="button" class="btn btn-ghost btn-sm" id="prevPage">Previous</button>
+      <span class="num" id="pageLabel">1 / 1</span>
+      <button type="button" class="btn btn-ghost btn-sm" id="nextPage">Next</button>
+    </div>
+  </section>
+
+  <!-- MY PUNKS -->
+  <section class="section" id="mine">
+    <header class="section-head">
+      <p class="kicker">My Punks</p>
+      <h2>Look up any wallet.</h2>
+    </header>
+    <div class="track wide">
+      <input id="mineAddr" type="text" placeholder="qz… Quantus address" autocomplete="off" spellcheck="false">
+      <button type="button" class="btn btn-gold btn-sm" id="mineBtn">Show punks</button>
+    </div>
+    <p class="muted" id="mineStatus">Paste an address to see the punks it holds.</p>
+    <div class="gallery" id="mineGallery"></div>
+  </section>
+
+  <!-- HOW -->
+  <section class="section" id="how">
+    <header class="section-head">
+      <p class="kicker">How it works</p>
+      <h2>Straight answers.</h2>
+    </header>
+    <div class="faq">
+      <details open><summary>Why is there no Connect Wallet button?</summary><p>Quantus wallets live on your phone and use post-quantum ML-DSA keys that browser wallets like MetaMask cannot sign. You mint by sending QTC from the Quantus Wallet app. No signature on this site is ever needed.</p></details>
+      <details><summary>How is ownership recorded?</summary><p>Each finalized payment to the treasury is an on-chain fact. The indexer replays those transfers in order and assigns punks from the shuffled list, so anyone running the open-source indexer gets the same owners.</p></details>
+      <details><summary>How do I send a punk to someone?</summary><p>Write a remark on chain from the wallet that holds it. With the Quantus CLI:</p><pre><code id="remarkCmd">quantus call --pallet System --call remark_with_event --args '["qpunks:transfer:1234:qzRECIPIENT"]' --from my_wallet</code></pre><p>Several punks at once: <code>qpunks:transfer:12,34,56:qz…</code>. The transfer applies only if your wallet owns every listed punk.</p></details>
+      <details><summary>What about the 10% royalty?</summary><p>Quantus has no contracts, so nothing can force a royalty on private trades. The 10% applies to every sale on the QuantusPunks marketplace, which opens after sell-out.</p></details>
+      <details><summary>What if I send the wrong amount?</summary><p>You get as many whole punks as you paid for, up to 20 per transfer. Anything left over, or anything sent after sell-out, goes on the refund list and is sent back to the same address.</p></details>
+      <details><summary>Can I check the shuffle was fair?</summary><p>Yes. The hash of the trait file and the hash of the shuffle seed are published before the mint.</p><dl class="hashes"><dt>Trait file (sha256)</dt><dd><code id="provHash">loading…</code></dd><dt>Seed commitment</dt><dd><code id="seedHash">published at launch</code></dd></dl></details>
+    </div>
+  </section>
+</main>
+
+<footer class="foot">
+  <span>QuantusPunks · community project, not affiliated with Quantus Network.</span>
+  <a id="xLink" href="https://x.com/" target="_blank" rel="noopener noreferrer">Follow on X</a>
+</footer>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <button type="button" class="modal-x" id="modalClose" aria-label="Close">×</button>
+    <canvas id="mCanvas" width="384" height="384"></canvas>
+    <div class="modal-info">
+      <h3 id="mTitle">#1</h3>
+      <p class="owner" id="mOwner">Not minted yet</p>
+      <ul class="attr" id="mAttr"></ul>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script src="js/config.js"></script>
+<script src="js/punks.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

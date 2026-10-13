@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/", "destination": "/site/index.html" },
+    { "source": "/:path((?!site/).*)", "destination": "/site/:path" }
+  ]
+}

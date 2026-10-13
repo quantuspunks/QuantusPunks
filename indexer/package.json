@@ -1,0 +1,13 @@
+{
+  "name": "quantuspunks-indexer",
+  "version": "1.0.0",
+  "private": true,
+  "main": "index.js",
+  "scripts": { "start": "node index.js", "test": "node test.js", "refunds": "node refunds.js" },
+  "dependencies": {
+    "@polkadot/api": "^15.9.1",
+    "@polkadot/util": "^13.4.3",
+    "@polkadot/util-crypto": "^13.4.3",
+    "dotenv": "^16.4.5"
+  }
+}
